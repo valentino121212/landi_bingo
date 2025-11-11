@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Bingo Virtual 🎲</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #1e1e2f;
+      color: #fff;
+      text-align: center;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 { color: #ffd700; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap: 10px;
+      max-width: 500px;
+      margin: 20px auto;
+    }
+    .num {
+      background: #333;
+      border-radius: 8px;
+      padding: 15px;
+      cursor: pointer;
+      transition: 0.2s;
+      user-select: none;
+    }
+    .num:hover { background: #555; }
+    .num.active {
+      background: #2ecc71;
+      color: #000;
+      transform: scale(1.1);
+    }
+    .code {
+      font-size: 22px;
+      background: #333;
+      display: inline-block;
+      padding: 10px 20px;
+      border-radius: 10px;
+      margin-top: 10px;
+    }
+    button {
+      background: #ffd700;
+      color: #000;
+      border: none;
+      padding: 10px 20px;
+      margin: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    button:hover { background: #ffed4a; }
+    input {
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      width: 180px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎤 Bingo Virtual</h1>
+  <p><strong>Locutor - Código de sala:</strong></p>
+  <div class="code" id="codigoSala"></div>
+
+  <p>Si sos jugador, ingresá el código:</p>
+  <input type="text" id="codigoInput" placeholder="Ej: 4821">
+  <button onclick="unirseSala()">Entrar</button>
+
+  <h3 id="mensajeJugador"></h3>
+
+  <div class="grid" id="numeros"></div>
+
+  <button id="muteBtn" onclick="toggleMute()">🔇 Silenciar micrófono</button>
+  <audio id="ding" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
+
+  <script>
+    // Generar código de sala
+    const codigo = Math.floor(1000 + Math.random() * 9000);
+    document.getElementById("codigoSala").textContent = codigo;
+
+    // Crear los números
+    const grid = document.getElementById("numeros");
+    for (let i = 1; i <= 90; i++) {
+      const num = document.createElement("div");
+      num.className = "num";
+      num.textContent = i;
+      num.onclick = () => cantarNumero(num, i);
+      grid.appendChild(num);
+    }
+
+    // Reproducir sonido y marcar número
+    function cantarNumero(el, numero) {
+      el.classList.toggle("active");
+      const audio = document.getElementById("ding");
+      audio.play();
+      const voz = new SpeechSynthesisUtterance(`Número ${numero}`);
+      voz.lang = "es-ES";
+      speechSynthesis.speak(voz);
+    }
+
+    // Muteo simulado
+    let muteado = false;
+    function toggleMute() {
+      muteado = !muteado;
+      const btn = document.getElementById("muteBtn");
+      btn.textContent = muteado ? "🔊 Activar micrófono" : "🔇 Silenciar micrófono";
+    }
+
+    // Jugador se une (decorativo)
+    function unirseSala() {
+      const input = document.getElementById("codigoInput").value;
+      const msg = document.getElementById("mensajeJugador");
+      if (input == codigo) {
+        msg.textContent = "✅ Te uniste correctamente a la sala del locutor.";
+      } else {
+        msg.textContent = "❌ Código incorrecto o sala inexistente.";
+      }
+    }
+  </script>
+</body>
+</html>
